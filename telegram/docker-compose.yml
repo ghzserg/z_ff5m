@@ -16,9 +16,9 @@ services:
     network_mode: host
     environment:
 #      - TZ=Europe/Kaliningrad
-#      - TZ=Europe/Moscow
+      - TZ=Europe/Moscow
 #      - TZ=Europe/Samara
-      - TZ=Asia/Yekaterinburg
+#      - TZ=Asia/Yekaterinburg
 #      - TZ=Asia/Omsk
 #      - TZ=Asia/Krasnoyarsk
 #      - TZ=Asia/Irkutsk
