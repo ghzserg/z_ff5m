@@ -1,0 +1,72 @@
+version: "3.3"
+# Dies ist ein Beispiel für eine Docker-Compose-Datei
+# Diese wird auf einem externen Host für den Telegram-Bot ausgeführt
+#
+# mkdir config log timelapse_finished timelapse
+# chmod 777 config log timelapse_finished timelapse
+#
+# docker-compose up -d ODER docker compose up -d
+#
+# Die Datei telegram.conf muss in den Ordner 'config' kopiert werden
+
+services:
+  moonraker-telegram-bot:
+    image: lefskiy/moonraker-telegram-bot:latest
+    restart: unless-stopped
+    network_mode: host
+    environment:
+#      - TZ=Europe/Berlin
+#      - TZ=Europe/Kaliningrad
+#      - TZ=Europe/Moscow
+#      - TZ=Europe/Samara
+#      - TZ=Asia/Yekaterinburg
+#      - TZ=Asia/Omsk
+#      - TZ=Asia/Krasnoyarsk
+#      - TZ=Asia/Irkutsk
+#      - TZ=Asia/Yakutsk
+#      - TZ=Asia/Vladivostok
+#      - TZ=Asia/Magadan
+#      - TZ=Asia/Kamchatka
+    volumes:
+      # Pfad zur Konfigurationsdatei des Bots
+      - ./config:/opt/printer_data/config
+      # Pfad für Log-Dateien
+      - ./log:/opt/printer_data/logs
+      # Pfad für fertige Zeitraffer-Videos
+      - ./timelapse_finished:/opt/printer_data/timelapse/finished
+      # Pfad für temporäre Zeitraffer-Daten während der Erstellung
+      - ./timelapse:/opt/printer_data/timelapse/tmp
+
+    cron:
+      image: alpine:latest
+      command: /bin/sh -c "while sleep 600; do find /home/moonraker-telegram-bot/ -type f -mtime +10 -delete; done"
+      volumes:
+        - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
+        - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
+
+# Kommentieren Sie 'spoolman' aus oder löschen Sie es, wenn Sie es nicht benötigen
+#
+# 1. Öffnen Sie den Port in der Firewall, falls Sie eine verwenden:
+# iptables -I INPUT -p tcp --dport 7912 -j ACCEPT
+#
+# 2. Erstellen Sie den Ordner 'spoolman':
+# mkdir spoolman
+# chmod 777 spoolman
+#
+# 3. Tragen Sie auf dem Drucker in der Datei 'mod_data/user.moonraker.conf' Folgendes ein:
+#
+# [spoolman]
+# server: http://EXTERNE_IP:7912
+# sync_rate: 5
+#
+# EXTERNE_IP - Die externe IP des Servers, auf dem Docker läuft.
+# Der Drucker MUSS Zugriff auf diese IP haben.
+  spoolman:
+    image: ghcr.io/donkie/spoolman:latest
+    restart: unless-stopped
+    volumes:
+      - ./spoolman:/home/app/.local/share/spoolman
+    ports:
+      - "7912:8000"
+    environment:
+      - TZ=Asia/Yekaterinburg
