@@ -6,10 +6,19 @@ set -x
 unset LD_LIBRARY_PATH
 unset LD_PRELOAD
 
+check_link()
+{
+    a=$(readlink "$1" 2>/dev/null)
+    if [ "$a" != "$2" ]; then
+        /bin/echo -n "$1 - Incorrect link ($a!=$2): "
+        rm -f "$1" 2>/dev/null
+        ln -s "$2" "$1" 2>/dev/null && echo "Исправлено"  || echo "Ошибка исправления"
+    fi
+}
+
 # Активация мода для AD5X
 enable_zmod_ad5x()
 {
-
     grep -q '/usr/data/zmod/zmod/.shell/fix_config.sh start' /usr/prog/klipper/start.sh || sed -i '2 i\/usr/data/zmod/zmod/.shell/fix_config.sh start' /usr/prog/klipper/start.sh
     grep -q "mount --bind /bin/echo /usr/bin/cmd_pwm" /usr/prog/app_startup.sh || sed -i '\#mount /usr/prog/etc /etc#a\mount --bind /bin/echo /usr/bin/cmd_pwm' /usr/prog/app_startup.sh
 
@@ -98,15 +107,6 @@ china_block()
     grep -q "$1" /etc/hosts || sed -i "2 i\127.0.0.1 $1" /etc/hosts
 }
 
-check_link()
-{
-    a=$(readlink "$1" 2>/dev/null)
-    if [ "$a" != "$2" ]; then
-        /bin/echo -n "$1 - Incorrect link ($a!=$2): "
-        rm -f "$1" 2>/dev/null
-        ln -s "$2" "$1" 2>/dev/null && echo "Исправлено"  || echo "Ошибка исправления"
-    fi
-}
 
 restore_base()
 {
