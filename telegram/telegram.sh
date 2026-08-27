@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run
-# bash <(wget --cache=off -q -O - https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.7/telegram/telegram.sh)
+# bash <(wget --cache=off -q -O - https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.8/telegram/telegram.sh)
 
 apt update 
 apt upgrade -y
@@ -194,10 +194,10 @@ mkdir -p \${bot_name}
 cd \${bot_name}
 message installed_dir "\$(pwd)"
 mkdir -p config log timelapse_finished timelapse spoolman
-wget --cache=off -q -O ../ff5m.sh https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.7/telegram/ff5m.sh
+wget --cache=off -q -O ../ff5m.sh https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.8/telegram/ff5m.sh
 chmod +x ../ff5m.sh
-wget --cache=off -q -O docker-compose.yml https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.7/telegram/docker-compose.yml
-wget --cache=off -q -O config/telegram.conf https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.7/telegram/telegram.conf
+wget --cache=off -q -O docker-compose.yml https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.8/telegram/docker-compose.yml
+wget --cache=off -q -O config/telegram.conf https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.8/telegram/telegram.conf
 chmod 777 config log timelapse_finished timelapse spoolman
 
 message instructions
