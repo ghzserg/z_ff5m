@@ -93,7 +93,7 @@ if ! [ -f /usr/data/zmod/zmod/.shell/0.sh ]; then
 fi
 
 source /usr/data/zmod/zmod/.shell/0.sh
-mkdir -p /usr/data/zmod/klipper/ /usr/data/zmod/moonraker/
+mkdir -p /usr/data/zmod/klipper/ /usr/data/zmod/moonraker/ ${MOD_CONF}/mod
 
 # Разблокировка
 china_razbl()
@@ -462,6 +462,7 @@ cors_domains:
         enable_zmod_ad5m
     fi
 
+    mkdir -p ${LOG_FILES}
     check_link ${LOG_FILES}/zmod ${MOD_CONF}/mod_data/log/
 
     rm -f /usr/bin/audio /usr/bin/audio_midi.sh /usr/lib/python3.7/site-packages/audio.py

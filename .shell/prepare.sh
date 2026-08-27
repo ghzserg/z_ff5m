@@ -111,11 +111,14 @@ start_prepare()
     fi
     echo "System start" >${MOD_CONF}/mod_data/log/ssh.log
 
+
     mount -t proc /proc ${MOD}/proc
     mount --rbind /sys ${MOD}/sys
     mount --rbind /dev ${MOD}/dev
     mount --bind /tmp ${MOD}/tmp
     mount --bind /run ${MOD}/run
+
+    mkdir -p ${MOD}/usr/data/zmod
     mount --bind /usr/data/zmod ${MOD}/usr/data/zmod
 
     mkdir -p ${MOD}/opt/config

@@ -117,14 +117,14 @@ prepare_chroot()
 
     [ -d /var/run/ ] || mkdir -p /var/run/
 
-    [ -L /root/printer_data/scripts ] || ln -s /usr/data/zmod/zmod/.shell /root/printer_data/scripts
+    check_link /root/printer_data/scripts /usr/data/zmod/zmod/.shell
 
     [ -d /etc/init.d/ ] || mkdir -p /etc/init.d/
 
-    [ -L /etc/init.d/S98zssh ] || ln -s /usr/data/zmod/zmod/.shell/S98zssh /etc/init.d/
+    check_link /etc/init.d/S98zssh /usr/data/zmod/zmod/.shell/S98zssh
     [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
-    [ -L /etc/init.d/S99camera ] || ln -s /usr/data/zmod/zmod/.shell/root/S99camera /etc/init.d/
-    [ -L /etc/init.d/S60klipper ] || ln -s /usr/data/zmod/zmod/.shell/root/S60klipper /etc/init.d/
+    check_link /etc/init.d/S99camera /usr/data/zmod/zmod/.shell/root/S99camera
+    check_link /etc/init.d/S60klipper /usr/data/zmod/zmod/.shell/root/S60klipper
 
     [ -d /srv/helixscreen/ ] || mkdir -p /srv/helixscreen/
     if ! [ -f /srv/helixscreen/release_info.json ]; then
@@ -189,9 +189,9 @@ prepare_chroot()
         ln -s /usr/data/zmod/zmod/.shell/root/sudo /bin/systemctl
     fi
 
-    [ -L /usr/bin/audio ] || ln -s /usr/data/zmod/zmod/.shell/root/audio/audio /usr/bin/audio
-    [ -L /usr/bin/audio_midi.sh ] || ln -s /usr/data/zmod/zmod/.shell/root/audio/audio_midi.sh /usr/bin/audio_midi.sh
-    [ -L /usr/bin/audio.py ] || ln -s /usr/data/zmod/zmod/.shell/root/audio/audio.py /usr/bin/audio.py
+    check_link /usr/bin/audio /usr/data/zmod/zmod/.shell/root/audio/audio
+    check_link /usr/bin/audio_midi.sh /usr/data/zmod/zmod/.shell/root/audio/audio_midi.sh
+    check_link /usr/bin/audio.py /usr/data/zmod/zmod/.shell/root/audio/audio.py
 
     CUR_DIR=$(pwd)
         cd /usr/data/zmod/zmod/.shell/midi/
@@ -207,7 +207,7 @@ prepare_chroot()
     fi
 
     #[ -L /bin/boot_eboard_mcu ] || ln -s /usr/data/zmod/zmod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
-    [ -L /bin/backlight ] || ln -s /usr/data/zmod/zmod/.shell/root/backlight /bin/backlight
+    check_link /bin/backlight /usr/data/zmod/zmod/.shell/root/backlight
 
     # fix ssh keys
     mkdir -p /root/.ssh/ /.ssh/
