@@ -22,7 +22,7 @@ if [ ${AD5X} -eq 1 ]; then
     mkdir -p $(dirname $KLIPPER_LOG) # make sure the log directory exists
     start-stop-daemon -S -b -m -p $PID_FILE --exec $PYTHON -- $KLIPPER $KLIPPER_CONF -l $KLIPPER_LOG -a $KLIPPER_UDS
 fi
-if [ ${AD5M} -eq 1 ]
+if [ ${AD5M} -eq 1 ]; then
     find /opt/PROGRAM/control/ -name NationsCommand| while read a; do $a -r ; done;
 fi
 
