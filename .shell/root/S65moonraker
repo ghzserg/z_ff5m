@@ -10,6 +10,7 @@ MOONRAKER=/root/moonraker-env/moonraker/moonraker.py
 PRINTER_DATA=/root/printer_data
 PRINTER_DATA_TMP=/root/printer_data/tmp
 PID_FILE=/run/moonraker.pid
+ZEROCONF_CONF=/root/printer_data/config/mod/zeroconf.moonraker.conf
 
 FNAME="/usr/data/zmod/zmod/fluidd.sql"
 [ ${ZLANG} != 'ru' ] && FNAME="/usr/data/zmod/zmod/fluidd_en.sql"
@@ -37,12 +38,60 @@ start() {
     rm -rf $PRINTER_DATA_TMP && mkdir -p $PRINTER_DATA_TMP # clean temp
     export TMPDIR=$PRINTER_DATA_TMP # without TMPDIR moonraker writes to /tmp which is a ramdisk
 
+    zeroconf_conf
+
+    if network_expected && ! has_ip; then
+        # Wait for the network to make zeroconf happy
+        (
+            wait_ip
+            run_moonraker
+        ) &
+    else
+        run_moonraker
+    fi
+}
+
+run_moonraker() {
     start-stop-daemon -S -b -m -p $PID_FILE --exec $PYTHON -- $MOONRAKER -d $PRINTER_DATA
 
     if [ "$NEED" == "Y" ]; then
         sleep 10
         sqlite3 /opt/config/mod_data/database/moonraker-sql.db <${FNAME}
     fi
+}
+
+zeroconf_conf() {
+    local name mac new
+    name=$(sed -n 's/.*"printerName" *: *"\([^"]*\)".*/\1/p' ${FFCONFIG} 2>/dev/null | head -n 1 |
+        tr 'A-Z' 'a-z' | tr -cs 'a-z0-9' '-' | sed 's/^-*//; s/-*$//' | cut -c 1-63 | sed 's/-*$//')
+    # mDNS supports only ASCII characters.
+    if ! echo "$name" | grep -q '[a-z]'; then
+        mac=$(cat /sys/class/net/wlan0/address /sys/class/net/eth0/address 2>/dev/null | head -n 1 | tr -d ':')
+        name="ad5m-$(echo "$mac" | tail -c 5)"
+        [ "$name" = "ad5m-" ] && name="ad5m"
+    fi
+    new="[zeroconf]
+mdns_hostname: ${name}"
+    if [ "$(cat ${ZEROCONF_CONF} 2>/dev/null)" != "$new" ]; then
+        echo "$new" >${ZEROCONF_CONF}.tmp && mv ${ZEROCONF_CONF}.tmp ${ZEROCONF_CONF}
+    fi
+}
+
+has_ip() {
+    ip -4 addr show scope global 2>/dev/null | grep -q inet
+}
+
+network_expected() {
+    grep '^[[:space:]]*ssid=' ${WPA_CONFIG} 2>/dev/null | grep -qv 'ssid="flashforge_5G"' && return 0
+    grep -qE '"(ethernetStatus|wifiHotspotStatus)" : true' ${FFCONFIG} 2>/dev/null
+}
+
+wait_ip() {
+    for i in $(seq 1 30); do
+        has_ip && return 0
+        sleep 1
+    done
+    return 1
 }
 
 stop() {
