@@ -37,12 +37,41 @@ start() {
     rm -rf $PRINTER_DATA_TMP && mkdir -p $PRINTER_DATA_TMP # clean temp
     export TMPDIR=$PRINTER_DATA_TMP # without TMPDIR moonraker writes to /tmp which is a ramdisk
 
+    if network_expected && ! has_ip; then
+        # Wait for the network to make zeroconf happy
+        (
+            wait_ip
+            run_moonraker
+        ) &
+    else
+        run_moonraker
+    fi
+}
+
+run_moonraker() {
     start-stop-daemon -S -b -m -p $PID_FILE --exec $PYTHON -- $MOONRAKER -d $PRINTER_DATA
 
     if [ "$NEED" == "Y" ]; then
         sleep 10
         sqlite3 /opt/config/mod_data/database/moonraker-sql.db <${FNAME}
     fi
+}
+
+has_ip() {
+    ip -4 addr show scope global 2>/dev/null | grep -q inet
+}
+
+network_expected() {
+    grep '^[[:space:]]*ssid=' ${WPA_CONFIG} 2>/dev/null | grep -qv 'ssid="flashforge_5G"' && return 0
+    grep -qE '"(ethernetStatus|wifiHotspotStatus)" : true' ${FFCONFIG} 2>/dev/null
+}
+
+wait_ip() {
+    for i in $(seq 1 30); do
+        has_ip && return 0
+        sleep 1
+    done
+    return 1
 }
 
 stop() {
