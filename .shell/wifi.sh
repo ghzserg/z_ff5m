@@ -89,6 +89,7 @@ wifi_fix()
     killall wpa_supplicant 2>/dev/null || true
     killall wpa_cli        2>/dev/null || true
     killall udhcpc         2>/dev/null || true
+    rm -f /run/udhcpc.$INTERFACE.pid
 
     sleep 1
     rm -f /var/run/wpa_supplicant/wlan0
@@ -109,6 +110,9 @@ wifi_fix()
     killall -9 wpa_cli
 
     start-stop-daemon --start --oknodo --background --exec /usr/sbin/wpa_cli -- -i $INTERFACE -a /usr/data/zmod/zmod/.shell/wifi_reconnect.sh
+    # wpa_cli -a does not report CONNECTED if the link came up before it attached
+    sleep 1
+    pidof udhcpc >/dev/null || { wpa_cli -i $INTERFACE status | grep -q '^wpa_state=COMPLETED' && /usr/data/zmod/zmod/.shell/wifi_reconnect.sh $INTERFACE CONNECTED; }
     echo "Wi-Fi restart initiated. DHCP will start automatically on connection."
 }
 
