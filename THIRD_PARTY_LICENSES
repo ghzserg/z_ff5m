@@ -134,6 +134,11 @@ License: GNU General Public License version 3 or later (GPLv3+) with Runtime Lib
 Description: Compiler collection for multiple programming languages
 URL: https://gcc.gnu.org/
 
+27. mjpg-streamer
+License: GNU General Public License version 2 (GPLv2)
+Description: MJPEG streamer for UVC cameras, patched build with capture on demand (.shell/root/zcam/mjpg)
+URL: https://github.com/mlengle/mjpg-streamer
+
 RUSSIAN SECTION
 ===============
 
@@ -266,3 +271,8 @@ URL: https://www.gnu.org/software/binutils/
 Лицензия: GNU General Public License версии 3 или более поздней (GPLv3+) с исключением для Runtime Library
 Описание: Компилятор для различных языков программирования
 URL: https://gcc.gnu.org/
+
+27. mjpg-streamer
+Лицензия: GNU General Public License версии 2 (GPLv2)
+Описание: MJPEG-стример для UVC-камер, сборка с патчем захвата по требованию (.shell/root/zcam/mjpg)
+URL: https://github.com/mlengle/mjpg-streamer
